@@ -15,6 +15,51 @@
           <target>8</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>7.0.1</version>
+        <executions>
+          <execution>
+            <id>generate-api-client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/swagger.yml</inputSpec>
+              <generatorName>java</generatorName>
+              <output>${project.basedir}/generated-api</output>
+              <configOptions>
+                <library>okhttp-gson</library>
+                <dateLibrary>java8</dateLibrary>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Plugin to update the API repo by cloning it -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>update-api</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>sh</executable>
+              <arguments>
+                <argument>-c</argument>
+                <argument>rm -rf api-repo &amp;&amp; git clone https://github.com/erpavlova/usermanagement.git api-repo</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <name>playwright-automation</name>
