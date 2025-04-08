@@ -1,0 +1,154 @@
+openapi: 3.0.1
+info:
+  title: User API
+  description: API for user operations like login, signup, delete, etc.
+  version: 1.0.0
+paths:
+  /users/signin:
+    post:
+      summary: User sign-in
+      description: Logs a user in with a username and password.
+      operationId: signin
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully logged in
+        '400':
+          description: Something went wrong
+        '422':
+          description: Invalid username/password supplied
+
+  /users/signup:
+    post:
+      summary: User signup
+      description: Registers a new user.
+      operationId: signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDataDTO'
+      responses:
+        '200':
+          description: Successfully signed up
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '422':
+          description: Username is already in use
+
+  /users/{username}:
+    delete:
+      summary: Delete a user
+      description: Deletes the user by username (admin only).
+      operationId: delete
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted user
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '404':
+          description: The user doesn't exist
+        '500':
+          description: Expired or invalid JWT token
+
+    get:
+      summary: Get user details
+      description: Retrieves user details by username (admin only).
+      operationId: search
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDTO'
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '404':
+          description: The user doesn't exist
+        '500':
+          description: Expired or invalid JWT token
+
+  /users/me:
+    get:
+      summary: Get current logged-in user's details
+      description: Retrieves the details of the currently logged-in user (admin or client only).
+      operationId: whoami
+      responses:
+        '200':
+          description: Successfully retrieved user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDTO'
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '500':
+          description: Expired or invalid JWT token
+
+  /users/refresh:
+    get:
+      summary: Refresh token for current user
+      description: Refreshes the JWT token for the logged-in user (admin or client only).
+      operationId: refresh
+      responses:
+        '200':
+          description: Successfully refreshed token
+
+components:
+  schemas:
+    UserDataDTO:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: string
+    UserResponseDTO:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string

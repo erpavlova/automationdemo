@@ -6,10 +6,12 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <build>
+    <sourceDirectory>${project.build.directory}/src/openapi/src/main/java</sourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
         <configuration>
           <source>8</source>
           <target>8</target>
@@ -18,19 +20,22 @@
       <plugin>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
-        <version>7.0.1</version>
+        <version>7.0.1</version> <!-- Use the latest version -->
         <executions>
           <execution>
-            <id>generate-api-client</id>
+            <id>generate-client</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/swagger.yml</inputSpec>
+              <inputSpec>${project.basedir}/swagger.yml</inputSpec>
               <generatorName>java</generatorName>
-              <output>${project.basedir}/generated-api</output>
+              <library>resttemplate</library> <!-- or okhttp-gson, webclient, etc. -->
+              <output>${project.build.directory}/src/openapi</output>
+              <modelPackage>com.example.api.model</modelPackage>
+              <apiPackage>com.example.api.endpoints</apiPackage>
+              <invokerPackage>com.example.api.invoker</invokerPackage>
               <configOptions>
-                <library>okhttp-gson</library>
                 <dateLibrary>java8</dateLibrary>
               </configOptions>
             </configuration>
@@ -51,10 +56,10 @@
               <goal>exec</goal>
             </goals>
             <configuration>
-              <executable>sh</executable>
+              <executable>cmd</executable>
               <arguments>
-                <argument>-c</argument>
-                <argument>rm -rf api-repo &amp;&amp; git clone https://github.com/erpavlova/usermanagement.git api-repo</argument>
+                <argument>/c</argument>
+                <argument>curl -o swagger.yml https://raw.githubusercontent.com/erpavlova/usermanagement/refs/heads/master/swagger.yml</argument>
               </arguments>
             </configuration>
           </execution>
@@ -76,6 +81,18 @@
       <groupId>com.microsoft.playwright</groupId>
       <artifactId>playwright</artifactId>
       <version>1.41.0</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>RELEASE</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>RELEASE</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
